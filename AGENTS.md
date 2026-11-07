@@ -39,3 +39,31 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+
+1.  — Аудіо-рушій та глобальний стан
+гілка: feature/audio-zustand
+
+Що робиш:
+
+Створюєш Zustand-стор (src/store/playerStore.ts) для управління станом плеєра (поточний трек, статуси play/pause, перемикання треків, гучність).
+
+Налаштовуєш логіку роботи з expo-av для реального відтворення музики в фоні та на екрані.
+
+2.  — UI плеєра та екрани
+гілка: feature/player-ui (створить від оновленого main)
+
+Що робить:
+
+Займається візуальною частиною: будує компоненти за допомогою компонентів і токенів Тамаґуї (YStack, XStack, кнопки, слайдери прогресу).
+
+Робить головний екран та красивий повноцінний екран відтворення треку (Player Screen), використовуючи готові стани з твого Zustand-стора.
+
+3.  Мок-дані та список треків
+гілка: feature/track-list (створить від оновленого main)
+
+Що робить:
+
+Формує файл із тестовими даними (src/data/tracks.ts) — список пісень із назвами, виконавцями, обкладинками та робочими посиланнями на аудіофайли.
+
+Верстає компонент списку треків (плейлист), щоб їх можна було зручно гортати і вибирати потрібну композицію.

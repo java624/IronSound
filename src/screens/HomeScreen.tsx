@@ -1,12 +1,15 @@
-import React from 'react';
 import { YStack, XStack, Text, ScrollView, Card, Button } from 'tamagui';
 import { TrackCard } from '../components/TrackCard';
+import { MusicStore } from '../data/musicData.mock';
+import { usePlayer, Song } from '../store/PlayerStore';
 
 interface HomeScreenProps {
   onOpenPlayer?: () => void;
 }
 
 export function HomeScreen({ onOpenPlayer }: HomeScreenProps) {
+  const { selectSong } = usePlayer()
+
   return (
     <YStack flex={1} backgroundColor="$background">
       
@@ -34,21 +37,18 @@ export function HomeScreen({ onOpenPlayer }: HomeScreenProps) {
           </Text>
           
           {/* Приклади карток (сюди згодом стане плейлист від Саші) */}
-          <TrackCard 
-            title="Metal Heavyriff" 
-            artist="IronSound Band" 
-            onPress={() => onOpenPlayer?.()} 
-          />
-          <TrackCard 
-            title="Cyberpunk Night" 
-            artist="Synthwave Code" 
-            onPress={() => onOpenPlayer?.()} 
-          />
-          <TrackCard 
-            title="Screaming Steel" 
-            artist="Dark Voltage" 
-            onPress={() => onOpenPlayer?.()} 
-          />
+          {MusicStore.map((song) => (
+            <TrackCard 
+            key={song.id}
+            title={song.title}
+            artist={song.artist}
+            cover={song.image}
+            onPress={() => {
+              selectSong(song)
+              onOpenPlayer?.()
+            }}
+            />
+          ))}
         </YStack>
       </ScrollView>
 

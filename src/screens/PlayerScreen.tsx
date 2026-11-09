@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { YStack, XStack, Text, Button, Card, Image } from 'tamagui';
+import { YStack, XStack, Text, Button, Card, Image, Slider } from 'tamagui';
 import { usePlayer } from '../store/PlayerStore';
 import {
   ChevronDownIcon,
@@ -73,11 +73,6 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
     );
   }
 
-  const progress =
-    currentSong.duration > 0
-      ? Math.min(100, (position / currentSong.duration) * 100)
-      : 0;
-
   return (
     <YStack flex={1} backgroundColor="#0c0e14" paddingHorizontal="$5" paddingVertical="$6" justifyContent="space-between">
       {/* Верхній бар */}
@@ -149,18 +144,20 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         </Text>
       </YStack>
 
-      {/* Смуга прогресу та таймкоди */}
+      {/* Інтерактивний Слайдер прогресу та перемотування */}
       <YStack gap="$2" width="100%">
-        <XStack
-          backgroundColor="rgba(255, 255, 255, 0.1)"
-          height={6}
-          borderRadius="$3"
+        <Slider
+          value={[position]}
+          max={currentSong.duration}
+          step={1}
+          onValueChange={([val]) => setPosition(val)}
           width="100%"
-          overflow="hidden"
-          alignItems="center"
         >
-          <XStack backgroundColor="#2563eb" width={`${progress}%`} height="100%" />
-        </XStack>
+          <Slider.Track height={6} backgroundColor="rgba(255, 255, 255, 0.1)" borderRadius="$3">
+            <Slider.TrackActive backgroundColor="#2563eb" />
+          </Slider.Track>
+          <Slider.Thumb index={0} circular size="$1" backgroundColor="white" />
+        </Slider>
 
         <XStack justifyContent="space-between">
           <Text fontSize="$2" fontWeight="600" color="#94a3b8">{formatTime(position)}</Text>

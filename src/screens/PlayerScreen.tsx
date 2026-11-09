@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { YStack, XStack, Text, Button, Card, Image } from 'tamagui';
 import { usePlayer } from '../store/PlayerStore';
+import {
+  ChevronDownIcon,
+  HeartIcon,
+  ShuffleIcon,
+  RepeatIcon,
+  SkipPrevIcon,
+  SkipNextIcon,
+  PlayIcon,
+  PauseIcon,
+  VolumeIcon,
+} from '../components/Icons';
 
 interface PlayerScreenProps {
   onBack?: () => void;
@@ -55,8 +66,8 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
 
   if (!currentSong) {
     return (
-      <YStack flex={1} backgroundColor="$background" alignItems="center" justifyContent="center">
-        <Text color="$gray10">Пісню не вибрано</Text>
+      <YStack flex={1} backgroundColor="#0c0e14" alignItems="center" justifyContent="center">
+        <Text color="#94a3b8">Пісню не вибрано</Text>
         <Button marginTop="$4" onPress={onBack}>Назад</Button>
       </YStack>
     );
@@ -68,120 +79,170 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
       : 0;
 
   return (
-    <YStack flex={1} backgroundColor="$background" padding="$5" justifyContent="space-between">
+    <YStack flex={1} backgroundColor="#0c0e14" paddingHorizontal="$5" paddingVertical="$6" justifyContent="space-between">
       {/* Верхній бар */}
       <XStack justifyContent="space-between" alignItems="center" marginTop="$6">
-        <Button size="sm" circular variant="quiet" onPress={onBack}>
-          ▼
-        </Button>
-        <Text fontSize="$4" fontWeight="600" color="$gray11">
-          ПЛЕЄР • IRONSOUND
-        </Text>
         <Button
           size="sm"
           circular
           variant="quiet"
+          width={42}
+          height={42}
+          backgroundColor="rgba(255, 255, 255, 0.06)"
+          onPress={onBack}
+        >
+          <ChevronDownIcon size={22} color="white" />
+        </Button>
+
+        <YStack alignItems="center">
+          <Text fontSize="$2" fontWeight="700" color="#60a5fa" letterSpacing={2}>
+            ЗАРАЗ ГРАЄ
+          </Text>
+          <Text fontSize="$3" fontWeight="600" color="#94a3b8">
+            IronSound
+          </Text>
+        </YStack>
+
+        <Button
+          size="sm"
+          circular
+          variant="quiet"
+          width={42}
+          height={42}
+          backgroundColor="rgba(255, 255, 255, 0.06)"
           onPress={() => setIsFavorite(!isFavorite)}
         >
-          {isFavorite ? '❤️' : '🤍'}
+          <HeartIcon
+            size={22}
+            color={isFavorite ? '#ef4444' : '#94a3b8'}
+            fill={isFavorite ? '#ef4444' : 'none'}
+          />
         </Button>
       </XStack>
 
       {/* Велика обкладинка альбому */}
       <YStack alignItems="center" justifyContent="center" marginVertical="$4">
         <Card
-          width={280}
-          height={280}
-          borderRadius="$9"
+          width={290}
+          height={290}
+          borderRadius="$6"
           overflow="hidden"
-          backgroundColor="$blue4"
+          backgroundColor="#1e2433"
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor="rgba(255, 255, 255, 0.12)"
         >
           <Image
             source={{ uri: currentSong.image }}
-            width={280}
-            height={280}
+            width={290}
+            height={290}
           />
         </Card>
       </YStack>
 
       {/* Інформація про трек */}
-      <YStack gap="$1" alignItems="center">
-        <Text fontSize="$7" fontWeight="bold" color="$color" textAlign="center" numberOfLines={2}>
+      <YStack gap="$1.5" alignItems="center">
+        <Text fontSize="$7" fontWeight="800" color="white" textAlign="center" numberOfLines={2}>
           {currentSong.title}
         </Text>
-        <Text fontSize="$4" color="$gray10" textAlign="center">
+        <Text fontSize="$4" fontWeight="600" color="#94a3b8" textAlign="center">
           {currentSong.artist}
         </Text>
       </YStack>
 
       {/* Смуга прогресу та таймкоди */}
       <YStack gap="$2" width="100%">
-        <XStack backgroundColor="$gray6" height={6} borderRadius="$3" width="100%" overflow="hidden">
-          <XStack backgroundColor="$blue10" width={`${progress}%`} height="100%" />
+        <XStack
+          backgroundColor="rgba(255, 255, 255, 0.1)"
+          height={6}
+          borderRadius="$3"
+          width="100%"
+          overflow="hidden"
+          alignItems="center"
+        >
+          <XStack backgroundColor="#2563eb" width={`${progress}%`} height="100%" />
         </XStack>
+
         <XStack justifyContent="space-between">
-          <Text fontSize="$2" color="$gray10">{formatTime(position)}</Text>
-          <Text fontSize="$2" color="$gray10">{formatTime(currentSong.duration)}</Text>
+          <Text fontSize="$2" fontWeight="600" color="#94a3b8">{formatTime(position)}</Text>
+          <Text fontSize="$2" fontWeight="600" color="#94a3b8">{formatTime(currentSong.duration)}</Text>
         </XStack>
       </YStack>
 
-      {/* Панель керування */}
-      <XStack justifyContent="space-around" alignItems="center" marginBottom="$6">
-        {/* Кнопка Shuffle */}
+      {/* Панель керування відтворенням */}
+      <XStack justifyContent="space-around" alignItems="center" marginBottom="$3">
+        {/* Shuffle */}
         <Button
           size="md"
           circular
           variant="quiet"
-          backgroundColor={isShuffle ? "$blue4" : undefined}
+          width={46}
+          height={46}
+          backgroundColor={isShuffle ? 'rgba(37, 99, 235, 0.2)' : 'transparent'}
           onPress={toggleShuffle}
         >
-          🔀
+          <ShuffleIcon size={22} color={isShuffle ? '#60a5fa' : '#94a3b8'} />
         </Button>
 
-        {/* Попередній трек */}
+        {/* Previous */}
         <Button
           size="lg"
           circular
           variant="quiet"
+          width={52}
+          height={52}
           onPress={prevSong}
         >
-          ⏮
+          <SkipPrevIcon size={26} color="white" />
         </Button>
 
-        {/* Головна кнопка Play / Pause */}
+        {/* Play / Pause - головна кнопка */}
         <Button
           size="xl"
           circular
-          backgroundColor="$blue10"
+          width={70}
+          height={70}
+          backgroundColor="#2563eb"
           onPress={togglePlay}
         >
-          <Text fontSize="$7" color="white">
-            {isPlaying ? '⏸' : '▶'}
-          </Text>
+          {isPlaying ? (
+            <PauseIcon size={30} color="white" />
+          ) : (
+            <PlayIcon size={30} color="white" />
+          )}
         </Button>
 
-        {/* Наступний трек */}
+        {/* Next */}
         <Button
           size="lg"
           circular
           variant="quiet"
+          width={52}
+          height={52}
           onPress={nextSong}
         >
-          ⏭
+          <SkipNextIcon size={26} color="white" />
         </Button>
 
-        {/* Кнопка Repeat */}
+        {/* Repeat */}
         <Button
           size="md"
           circular
           variant="quiet"
-          backgroundColor={isRepeat ? "$blue4" : undefined}
+          width={46}
+          height={46}
+          backgroundColor={isRepeat ? 'rgba(37, 99, 235, 0.2)' : 'transparent'}
           onPress={toggleRepeat}
         >
-          🔁
+          <RepeatIcon size={22} color={isRepeat ? '#60a5fa' : '#94a3b8'} />
         </Button>
+      </XStack>
+
+      {/* Нижня панель гучності (естетичний слайдер) */}
+      <XStack alignItems="center" gap="$3" paddingHorizontal="$4" marginBottom="$2">
+        <VolumeIcon size={18} color="#64748b" />
+        <XStack flex={1} backgroundColor="rgba(255, 255, 255, 0.08)" height={4} borderRadius="$2" overflow="hidden">
+          <XStack backgroundColor="#64748b" width="70%" height="100%" />
+        </XStack>
       </XStack>
     </YStack>
   );

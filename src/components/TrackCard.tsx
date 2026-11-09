@@ -4,18 +4,22 @@ import { XStack, YStack, Text, Button, Card, Image } from 'tamagui';
 interface TrackCardProps {
   title: string;
   artist: string;
-  cover: string;        // URL картинки
+  cover: string;
+  isActive?: boolean;
+  isPlaying?: boolean;
   onPress: () => void;
 }
 
-export function TrackCard({ title, artist, cover, onPress }: TrackCardProps) {
+export function TrackCard({ title, artist, cover, isActive, isPlaying, onPress }: TrackCardProps) {
   return (
     <Card
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$backgroundPress"
+      borderWidth={isActive ? 1.5 : 1}
+      borderColor={isActive ? "$blue10" : "$borderColor"}
+      backgroundColor={isActive ? "$blue2" : "$backgroundPress"}
       padding="$3"
       borderRadius="$4"
+      onPress={onPress}
+      cursor="pointer"
     >
       <XStack alignItems="center" gap="$3">
         <Image
@@ -26,7 +30,12 @@ export function TrackCard({ title, artist, cover, onPress }: TrackCardProps) {
         />
 
         <YStack flex={1} gap="$1">
-          <Text fontSize="$5" fontWeight="600" color="$color" numberOfLines={1}>
+          <Text
+            fontSize="$5"
+            fontWeight="600"
+            color={isActive ? "$blue10" : "$color"}
+            numberOfLines={1}
+          >
             {title}
           </Text>
           <Text fontSize="$3" color="$gray10" numberOfLines={1}>
@@ -34,8 +43,16 @@ export function TrackCard({ title, artist, cover, onPress }: TrackCardProps) {
           </Text>
         </YStack>
 
-        <Button size="sm" onPress={onPress}>
-          ▶ Play
+        <Button
+          size="sm"
+          circular={isActive}
+          backgroundColor={isActive ? "$blue10" : undefined}
+          onPress={(e) => {
+            e.stopPropagation();
+            onPress();
+          }}
+        >
+          {isActive && isPlaying ? '⏸' : '▶'}
         </Button>
       </XStack>
     </Card>

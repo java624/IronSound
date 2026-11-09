@@ -13,21 +13,45 @@ const formatTime = (totalSec: number) => {
 };
 
 export function PlayerScreen({ onBack }: PlayerScreenProps) {
-  const { currentSong, isPlaying, setIsPlaying } = usePlayer();
+  const {
+    currentSong,
+    isPlaying,
+    togglePlay,
+    nextSong,
+    prevSong,
+    isShuffle,
+    toggleShuffle,
+    isRepeat,
+    toggleRepeat,
+  } = usePlayer();
 
   const [position, setPosition] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
 
+  // Скидання позиції при перемиканні треку
   useEffect(() => {
     setPosition(0);
   }, [currentSong?.id]);
 
+  // Симуляція відтворення часу (поки Особа 1 не підключить expo-av)
   useEffect(() => {
     if (!isPlaying || !currentSong) return;
+
     const timer = setInterval(() => {
-      setPosition((p) => (p >= currentSong.duration ? p : p + 1));
+      setPosition((p) => {
+        if (p >= currentSong.duration) {
+          if (isRepeat) {
+            return 0;
+          }
+          nextSong();
+          return 0;
+        }
+        return p + 1;
+      });
     }, 1000);
+
     return () => clearInterval(timer);
-  }, [isPlaying, currentSong]);
+  }, [isPlaying, currentSong, isRepeat, nextSong]);
 
   if (!currentSong) {
     return (
@@ -53,14 +77,27 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         <Text fontSize="$4" fontWeight="600" color="$gray11">
           ПЛЕЄР • IRONSOUND
         </Text>
-        <Button size="sm" circular variant="quiet">
-          ❤️
+        <Button
+          size="sm"
+          circular
+          variant="quiet"
+          onPress={() => setIsFavorite(!isFavorite)}
+        >
+          {isFavorite ? '❤️' : '🤍'}
         </Button>
       </XStack>
 
-      {/* Обкладинка */}
+      {/* Велика обкладинка альбому */}
       <YStack alignItems="center" justifyContent="center" marginVertical="$4">
-        <Card width={280} height={280} borderRadius="$9" overflow="hidden" backgroundColor="$blue4">
+        <Card
+          width={280}
+          height={280}
+          borderRadius="$9"
+          overflow="hidden"
+          backgroundColor="$blue4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
           <Image
             source={{ uri: currentSong.image }}
             width={280}
@@ -79,7 +116,7 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         </Text>
       </YStack>
 
-      {/* Прогрес */}
+      {/* Смуга прогресу та таймкоди */}
       <YStack gap="$2" width="100%">
         <XStack backgroundColor="$gray6" height={6} borderRadius="$3" width="100%" overflow="hidden">
           <XStack backgroundColor="$blue10" width={`${progress}%`} height="100%" />
@@ -90,31 +127,59 @@ export function PlayerScreen({ onBack }: PlayerScreenProps) {
         </XStack>
       </YStack>
 
-      {/* Керування */}
+      {/* Панель керування */}
       <XStack justifyContent="space-around" alignItems="center" marginBottom="$6">
-        <Button size="md" circular variant="quiet" fontSize="$5">
+        {/* Кнопка Shuffle */}
+        <Button
+          size="md"
+          circular
+          variant="quiet"
+          backgroundColor={isShuffle ? "$blue4" : undefined}
+          onPress={toggleShuffle}
+        >
           🔀
         </Button>
-        <Button size="lg" circular variant="quiet" fontSize="$6" onPress={() => console.log('Prev')}>
+
+        {/* Попередній трек */}
+        <Button
+          size="lg"
+          circular
+          variant="quiet"
+          onPress={prevSong}
+        >
           ⏮
         </Button>
 
-        {/* Велика центральна кнопка Play/Pause */}
+        {/* Головна кнопка Play / Pause */}
         <Button
           size="xl"
           circular
           backgroundColor="$blue10"
-          onPress={() => setIsPlaying(!isPlaying)}
+          onPress={togglePlay}
         >
           <Text fontSize="$7" color="white">
             {isPlaying ? '⏸' : '▶'}
           </Text>
         </Button>
 
-        <Button size="lg" circular variant="quiet" fontSize="$6" onPress={() => console.log('Next')}>
+        {/* Наступний трек */}
+        <Button
+          size="lg"
+          circular
+          variant="quiet"
+          onPress={nextSong}
+        >
           ⏭
         </Button>
-        <Button size="md" circular variant="quiet" fontSize="$5">
+
+        {/* Кнопка Repeat */}
+        <Button
+          size="md"
+          circular
+          variant="quiet"
+          backgroundColor={isRepeat ? "$blue4" : undefined}
+          onPress={toggleRepeat}
+        >
           🔁
         </Button>
       </XStack>
